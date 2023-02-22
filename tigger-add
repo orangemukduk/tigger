@@ -1,0 +1,28 @@
+#!/bin/dash
+
+# If .tigger directory doesn't exist
+if ! [ -d .tigger ]; then
+    echo "tigger-add: error: tigger repository directory .tigger not found"
+    exit 1
+fi 
+
+# If no arguments provided
+if [ "$#" -eq 0 ]; then
+    echo "usage: tigger-add <filenames>"
+    exit 1
+fi
+
+# If one or more files does not exist
+for file in "$@"
+do
+    if ! [ -f "$file" ]; then
+        echo "tigger-add: error: can not open '$file'"
+        exit 1
+    fi
+done
+
+# Adding files to directory
+for file in "$@"
+do
+    cp "$file" .tigger/index
+done

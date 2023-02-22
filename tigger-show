@@ -1,0 +1,48 @@
+#!/bin/dash
+
+
+#If tigger repository is not found 
+if ! [ -d .tigger ]; then
+    echo "tigger-log: error: tigger repository directory .tigger not found"
+    exit 1
+fi
+
+# If no arguments are given
+if [ "$#" -ne 1 ]; then 
+    echo "usage: tigger-show <commit>:<filename>"
+    exit 1
+fi
+
+#Obtaining commit and file from argument given
+commit=$(echo "$1" | cut -d ':' -f1)
+file=$(echo "$1" | cut -d ':' -f2)
+
+
+# If no commit is given
+if ! [ -n "$commit" ]; then 
+    # If file doesn't exist
+    if ! [ -f ".tigger/index/$file" ]; then
+        echo "tigger-show: error: '$file' not found in index"
+        exit 1
+    else 
+        cat ".tigger/index/$file"
+        exit 0
+    fi
+fi
+
+#If commit given does not exist
+if ! [ -d ".tigger/commits/commit-$commit" ]; then
+    echo "tigger-show: error: unknown commit '$commit'"
+    exit 1
+fi
+
+
+#If file given does not exist
+if ! [ -f ".tigger/commits/commit-$commit/$file" ]; then
+    echo "tigger-show: error: '$file' not found in commit $commit"
+    exit 1
+fi
+
+#If commit exists and file exists
+cat ".tigger/commits/commit-$commit/$file"
+

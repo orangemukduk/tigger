@@ -1,0 +1,45 @@
+#!/bin/dash
+
+#If .tigger directory is not found
+if [ -f .tigger ]; then
+    echo "tigger-commit: error: tigger repository directory .tigger not found"
+    exit 1
+fi
+
+#If second argument given is not -m or if no commit message is given
+if [ "$1" != -m ] || [ "$#" -ne 2 ]; then
+    echo "usage: tigger-commit [-a] -m commit-message"
+    exit 1
+fi
+
+#Creating empty directory
+i=0
+while [ -d .tigger/commits/commit-$i ]; do
+    i=$((i + 1))
+done
+
+
+#If no files have been added
+j=$((i - 1))
+if [ $j -ne -1 ]; then
+    diff -s .tigger/index/ .tigger/commits/commit-$j 1> /dev/null
+    if [ "$?" -eq 0 ]; then
+        echo "nothing to commit"
+        exit 1
+    fi
+fi
+
+
+#Make new commit directory
+mkdir .tigger/commits/commit-$i
+
+#Copy files to commit directory
+for file in .tigger/index/*; do 
+cp "$file" .tigger/commits/commit-$i
+done
+echo "Committed as commit $i"
+#Copy message to log.txt in .tigger directory
+echo "$i $2">>.tigger/log.txt
+
+
+
